@@ -37,7 +37,7 @@ used to check whether the isntructions produced are right and we get the right o
 spike can also be used for debugging 
 ![Screenshot from 2023-08-20 12-01-59](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/a455e3fe-aab6-4a0d-b3ef-8519375702d6)
 
-# integer number representations
+## integer number representations
 
 let's write a c program that shows max and min length of an unsigned
 64 bit integer
@@ -58,6 +58,41 @@ int main(){
 let's do the same for signed numbers
 
 ![Screenshot from 2023-08-20 12-17-19](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/7d44944a-453a-4264-a737-f47a1a716f71)
+
+# DAY 2 (ABI INTERFACE)
+## Application binary interface
+ABI is a set of rules that tell us how binary code interacts with another binary code. 64 bit value can be loaded into the memory by 2 methods - little-endian and big-endian. Load instruction is used to transfer data from memory to a register. Store instruction is used to transfer data from register to memory. Add instruction performs addition operation on two registers. In RISC-V 64, we have 32 registers and their ABI names play a role in maintaining compatibility and facilitating communication between different software components
+## Labwork using ABI function calls
+c code for adding numbers 1 to 9
+~~~
+#include <stdio.h>
+
+extern int load(int x, int y);
+
+int main(){
+	int result = 0;
+	int count = 9;
+	result = load(0x0,count+1);
+	printf("sum of numbers from 1 to 9 is %d \n",result);
+}
+~~~
+the above c code in risc-v instruction set
+~~~
+.section .text
+.global load
+.type load, @function
+
+load:
+	add a4,a0,zero //initialize a4 with value 0x0
+	add a2,a0,a1   //store value as 10 in a2, a1 has value 0xa from main function
+	add a3,a0,zero //initialize a3 with value 0 
+loop:   add a4,a3,a4   //incremental addition
+	addi a3,a3,1   //increment a3 by 1
+	blt a3,a2,loop //if a3 is lesser than a2 then pass through the loop again
+	add a0,a4,zero //store final answer in a0
+	ret
+~~~
+
 
 
 
