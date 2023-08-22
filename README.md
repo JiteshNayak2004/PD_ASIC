@@ -63,7 +63,7 @@ let's do the same for signed numbers
 ## Application binary interface
 ABI is a set of rules that tell us how binary code interacts with another binary code. 64 bit value can be loaded into the memory by 2 methods - little-endian and big-endian. Load instruction is used to transfer data from memory to a register. Store instruction is used to transfer data from register to memory. Add instruction performs addition operation on two registers. In RISC-V 64, we have 32 registers and their ABI names play a role in maintaining compatibility and facilitating communication between different software components
 ## Labwork using ABI function calls
-c code for adding numbers 1 to 9
+c code for adding numbers 1 to 9 named prgm
 ~~~
 #include <stdio.h>
 
@@ -76,7 +76,7 @@ int main(){
 	printf("sum of numbers from 1 to 9 is %d \n",result);
 }
 ~~~
-the above c code in risc-v instruction set
+the above c code in risc-v instruction set named load.s
 ~~~
 .section .text
 .global load
@@ -92,6 +92,8 @@ loop:   add a4,a3,a4   //incremental addition
 	add a0,a4,zero //store final answer in a0
 	ret
 ~~~
+### compiling the c and assembly code
+![Screenshot from 2023-08-22 15-15-22](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/d1fb169f-3401-44bb-ba8a-3413b9d95dc0)
 
 
 
