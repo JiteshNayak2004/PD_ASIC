@@ -95,7 +95,76 @@ loop:   add a4,a3,a4   //incremental addition
 ### compiling the c and assembly code
 ![Screenshot from 2023-08-22 15-15-22](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/d1fb169f-3401-44bb-ba8a-3413b9d95dc0)
 
+# sky130 
+## day 1
+1.the rtl design is the implementation of a spec and we check the
+functionality by simulating the design in a simulator
+2.the simulator we'd be using is iverilog
+3.the design is a set of verilog codes that has implemented the spec
+like say full adder implemented with a lot of sub-blocks
+4.a testbench is the setup  to apply some inputs and check whether 
+the design is working as required
+5.how does the simulator work it looks for changes in input and responds to them if there is no change in ip no change in op
+6.we provide a design file and a testbench corresponding to the design file to iverilog and it generates a vcd file
+(value change dump)
+7.this vcd file cannot be directly viewwed and we use this other application called gtkwave to view the vcd file
+## day 1_lab
+1.running iverilog and gtkwave
+~~~
+iverilog good_mux.v tb_good_mux.v 
+./a.out
+gtkwave tb_good_mux.vcd
+~~~
+snapshots of the execution
 
+![Screenshot from 2023-08-27 22-07-08](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/5a138dd9-bed7-4e78-9792-4cbac91ccc81)
+![Screenshot from 2023-08-27 22-07-40](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/7d05390b-e7f4-449f-bfcd-3efcdf202dd5)
+
+2.verilog design and testbench codes that we executed
+~~~
+module good_mux (input i0 , input i1 , input sel , output reg y);
+always @ (*)
+begin
+	if(sel)
+		y <= i1;
+	else 
+		y <= i0;
+end
+endmodule
+~~~
+
+~~~
+`timescale 1ns / 1ps
+module tb_good_mux;
+	// Inputs
+	reg i0,i1,sel;
+	// Outputs
+	wire y;
+
+        // Instantiate the Unit Under Test (UUT)
+	good_mux uut (
+		.sel(sel),
+		.i0(i0),
+		.i1(i1),
+		.y(y)
+	);
+
+	initial begin
+	$dumpfile("tb_good_mux.vcd");
+	$dumpvars(0,tb_good_mux);
+	// Initialize Inputs
+	sel = 0;
+	i0 = 0;
+	i1 = 0;
+	#300 $finish;
+	end
+
+always #75 sel = ~sel;
+always #10 i0 = ~i0;
+always #55 i1 = ~i1;
+endmodule
+
+~~~
 
 
 
