@@ -204,11 +204,21 @@ in all parameters according to these constraints
 
 ## yosys and logic synthesis
 1. just typing out yosys in your shell will invoke yosys
-   
-3. now read the library using read_liberty -lib path
-   
-4. now read design file using read_verilog path
-5. synth -top module name to synthesize -top says that this is the top module
+![Screenshot from 2023-08-29 14-04-32](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/fee9a105-6109-455b-85fb-fe418ed2a39e) 
+2. now read the library using read_liberty -lib path
+![Screenshot from 2023-08-29 14-14-40](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/a52b4805-d60f-4fdf-a54c-d246223a3933)
+3. now read design file using read_verilog path
+![Screenshot from 2023-08-29 14-18-20](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/0c30a230-1b97-4118-899c-7b958367f790)
+4. synth -top module name to synthesize -top says that this is the top module
+![Screenshot from 2023-08-29 14-22-00](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/d6ae5f34-9a6b-4b03-80d0-b10716aa86d0)
+the output of the synthesis displays the number of wires used, number of standard cells used and the name of them
+5. generating the netlist
+![Screenshot from 2023-08-29 14-24-29](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/9b340817-44ce-47fd-9858-0d1483595bd1)
+6. we can view the netlist by the show command
+![Uploading Screenshot from 2023-08-29 14-25-00.png…]()
+8. writing the netlist
+9. viewing the netlist 
+
 
 
 
