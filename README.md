@@ -202,11 +202,13 @@ faster the charging/discharging of capacitance lesser the delay
 in all parameters according to these constraints
 ![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/4c7bb81a-c38e-4527-936e-77b0654f4fe9)
 
-## day 2 lab
+## yosys and logic synthesis
 1. just typing out yosys in your shell will invoke yosys
-2. now read the library using read_liberty -lib path
-3. now read design file using read_verilog path
-4. synth -top module name to synthesize -top says that this is the top module
+   
+3. now read the library using read_liberty -lib path
+   
+4. now read design file using read_verilog path
+5. synth -top module name to synthesize -top says that this is the top module
 
 
 
