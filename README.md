@@ -166,5 +166,49 @@ endmodule
 
 ~~~
 
+## day 2
+### class 1
+1. yosys is a tool used to convert rtl to netlist it is called a synthesizer
+2. we have a verilog design and have .lib file that contains the standard cells required for synthesis
+given this to yosys it can generate a technology specific netlist
+3. there is a read_verilog command to read design and read_liberty for the library file
+and write_verilog to write out the netlist
+4. now for checking whether the netlist generated is accurate we give the netlist and the testbench to iverilog
+and we get a vcd file and use gtkwave to see the wave
+
+### class 2
+1. what is rtl design it is the  behavioural representation  of the required specs using a hdl
+
+but what we need is a hardware not code ?
+the rtl design  is converted into gates and the connection are made between the gates and given out 
+in a file called netlist this is done by a logic synthesizer such as yosys
+
+rtl --> synthesis --> netlist
+
+2. what is .lib it is a collection  of logical modules including basic gates etc it may contain modifications of the same gate	
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/b3cdbf1f-2186-4571-a49d-d0b08f2b9612)
+
+
+
+3. we'd need fast gates cuz we wanna reduce t_comb as that is the only parameter that we can modify and play around with in sequential ckts
+as tpcq,tccq etc are fixed values
+4. the slow cells are required to address hold time issues
+load in digital ckts are capacitance
+faster the charging/discharging of capacitance lesser the delay
+->to charge/discharge the capacitances faster, we need transistors capable of sourcing more current higher w/l
+->wider transistors low delay but more area and power
+->narrow transistors high delay but less area and power
+5. what kinda cells to use faster slower medium depends on the constraints we set the synthesizer optimizes the best soln
+in all parameters according to these constraints
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/4c7bb81a-c38e-4527-936e-77b0654f4fe9)
+
+## day 2 lab
+1. just typing out yosys in your shell will invoke yosys
+2. now read the library using read_liberty -lib path
+3. now read design file using read_verilog path
+4. synth -top module name to synthesize -top says that this is the top module
+
+
+
 
 
