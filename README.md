@@ -1,11 +1,12 @@
 # PD_ASIC
 this is a repo that contains the notes and lab assignments for physical design for ASIC course
+## RISCV
+<details>
+<summary>Day 1 setting up the risc-v toolchain </summary>
+1. the risc-v compiler version
+![Screenshot from 2023-08-20 10-44-56]			(https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/fc1fce85-47da-4347-b615-43a5367c0af2)
 
-## Day 1 <setting up the risc-v toolchain>
-1.the risc-v compiler version
-![Screenshot from 2023-08-20 10-44-56](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/fc1fce85-47da-4347-b615-43a5367c0af2)
-
-2.writing and compiling a c program
+2. writing and compiling a c program
 
 ~~~c
 #include<stdio.h>
@@ -22,7 +23,7 @@ printf("sum of numbers from i to %d is %d /n ",n,sum);
 ~~~
 ![Screenshot from 2023-08-20 11-01-39](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/76e1d4a6-ad34-495b-b14e-a543886a484a)
 
-3.assembly program equivalent of the above c program we wrote using
+3. assembly program equivalent of the above c program we wrote using
 the risc-v compiler
 ![Screenshot from 2023-08-20 11-10-01](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/f8eedd8f-0191-43fa-b1ee-50c693235359)
 the -S flag tells the compiler to stop after assembly generation
@@ -30,14 +31,15 @@ the -S flag tells the compiler to stop after assembly generation
 ![Screenshot from 2023-08-20 11-12-39](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/fcab4a82-f31c-4278-a8e9-5f65051cc47f)
 snippet of the first 25 lines  of the assembly code generated
 
-4.spike simulation 
+4. spike simulation 
 used to check whether the isntructions produced are right and we get the right output
 ![Screenshot from 2023-08-20 11-59-58](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/1e6af2ce-e01d-4b9c-8b88-1f620d049ad2)
 
 spike can also be used for debugging 
 ![Screenshot from 2023-08-20 12-01-59](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/a455e3fe-aab6-4a0d-b3ef-8519375702d6)
-
-## integer number representations
+</details>
+<details>
+<summary>integer number representations</summary>
 
 let's write a c program that shows max and min length of an unsigned
 64 bit integer
@@ -59,7 +61,11 @@ let's do the same for signed numbers
 
 ![Screenshot from 2023-08-20 12-17-19](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/7d44944a-453a-4264-a737-f47a1a716f71)
 
-# DAY 2 (ABI INTERFACE)
+</details>
+
+<details>
+<summary> ABI INTERFACE </summary>
+
 ## Application binary interface
 ABI is a set of rules that tell us how binary code interacts with another binary code. 64 bit value can be loaded into the memory by 2 methods - little-endian and big-endian. Load instruction is used to transfer data from memory to a register. Store instruction is used to transfer data from register to memory. Add instruction performs addition operation on two registers. In RISC-V 64, we have 32 registers and their ABI names play a role in maintaining compatibility and facilitating communication between different software components
 ## Labwork using ABI function calls
@@ -92,11 +98,16 @@ loop:   add a4,a3,a4   //incremental addition
 	add a0,a4,zero //store final answer in a0
 	ret
 ~~~
+
 ### compiling the c and assembly code
 ![Screenshot from 2023-08-22 15-15-22](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/d1fb169f-3401-44bb-ba8a-3413b9d95dc0)
 
-# sky130 
-## day 1
+</details>
+
+## sky130 
+
+<details>
+<summary>iverilog</summary>
 1.the rtl design is the implementation of a spec and we check the
 functionality by simulating the design in a simulator
 2.the simulator we'd be using is iverilog
@@ -108,7 +119,8 @@ the design is working as required
 6.we provide a design file and a testbench corresponding to the design file to iverilog and it generates a vcd file
 (value change dump)
 7.this vcd file cannot be directly viewwed and we use this other application called gtkwave to view the vcd file
-## day 1_lab
+
+
 1.running iverilog and gtkwave
 ~~~
 iverilog good_mux.v tb_good_mux.v 
@@ -165,9 +177,10 @@ always #55 i1 = ~i1;
 endmodule
 
 ~~~
+</details>
 
-## day 2
-### class 1
+<details>
+<summary>yosys</summary>
 1. yosys is a tool used to convert rtl to netlist it is called a synthesizer
 2. we have a verilog design and have .lib file that contains the standard cells required for synthesis
 given this to yosys it can generate a technology specific netlist
@@ -217,7 +230,20 @@ the output of the synthesis displays the number of wires used, number of standar
 6. we can view the netlist by the show command
 ![Uploading Screenshot from 2023-08-29 14-25-00.png…]()
 8. writing the netlist
-9. viewing the netlist 
+![Screenshot from 2023-08-29 14-26-08](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/0a637a30-fff1-489a-a596-ad9055e24509)
+9. viewing the netlist
+![Screenshot from 2023-08-29 14-28-29](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/7c9f560a-4280-4e7e-8ab1-1689ba198d2f)
+
+</details>
+
+
+
+
+
+
+
+
+
 
 
 
