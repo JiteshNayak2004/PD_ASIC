@@ -378,9 +378,8 @@ synth -top sub_module
 abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
 show
 ```
-</details>
-
 ![submodule_synth](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/52d31fc4-ac67-4ea5-a15c-5e5c7c84be27)
+</details>
 
 
 <details>
