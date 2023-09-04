@@ -245,6 +245,8 @@ To view the contents inside the .lib file type the following command :
 cd ASIC/sky130RTLDesignAndSynthesisWorkshop/lib/
 gvim sky130_fd_sc_hd__tt_025C_1v80.lib
 ```
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/1e937c8a-25c7-401e-aee0-38c7b2a21a38)
+
 The name of the library file ("sky130_fd_sc_hd__tt_025C_1v80") means the following :
 
 tt : indicates variations due to process and here it indicates Typical Process.
@@ -263,6 +265,8 @@ The variations in these parameters can cause significant changes in the performa
 Further it contains the technology that is used is CMOS for which delay are modelled  through table lookup. This file also defines the units for parameters like voltage, power, current, capacitance, and resistance. Within the .lib library, each standard cell consists a  set of parameters specific to that cell's features.
 
 Consider the a2111oi gate whose parameters and verilog files is shown below:
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/31b66402-36be-4119-ac13-38d1d581cf22)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/662accaf-331f-4837-958b-546b6468fcf8)
 
 1. here a21110i means and first 2 ips and or it with other inputs
 2. we can check the verilog model of the file to understand functionality
@@ -275,6 +279,10 @@ Consider the a2111oi gate whose parameters and verilog files is shown below:
 4. Similarly for all the standard cells the parameters above mentioned is listed in the .lib file.
 
 Consider the different versions of the same logic gate shown below:
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/da33fe3e-95ab-4a0a-8508-8c62b9341185)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/36a40662-9dc1-4ed2-b2a8-60de24e324ce)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/19dcab1b-4aa0-4f30-9a59-7c1118e550b3)
+
 
 
 In all the three the logic inferred is same but the area is different. Wider cells consume more power but delay wise it is less. The leakage power in the wider cell is more compared to the narrow cell which is depicted in the image .
@@ -779,6 +787,277 @@ Suppose some part of the logic from combinational circuit between flop B and C i
 
 
 The maximum frequency with which the portion of circuit between A and B can be operated is 250MHz and the maximum frequency with which the portion of circuit between B and C can be operated is 333MHz. The effective frequency is minimum of the both which is 250MHz. Thus the effective maximum frequency has increased after performing the retiming.
+### **Illustration of Sequential Optimizsation:**
+
+**Steps to simulate and generate the netlist for the below designs**
+
+Simulation steps :
+```
+iverilog <rtl_name.v> <tb_name.v>
+./a.out
+gtkwave <dump_file_name.vcd>
+```
+
+Generating netlist steps :
+```
+# Remove "#" if needed
+yosys
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+read_verilog <module_name.v> 
+synth -top <top_module_name>
+# flatten # use if the multiple modules are present
+opt_clean -purge
+dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+show
+write_verilog -noattr <netlist_name.v>
+```
+
+#### **Example 1**
+The verilog code for the example 1 is given below :
+```
+module dff_const1(input clk, input reset, output reg q);
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+		q <= 1'b0;
+	else
+		q <= 1'b1;
+end
+
+endmodule
+```
+The above code infers the circuit as shown below :
+
+
+Since this code doesn't need optimisation it will infer a D flip-flop with asynchronous reset as shown above.
+
+The simulation, synthesis result and the netlist are shown below :
+
+
+
+All the standard cells by default have negative logic for reset and since in the code reset is mentioned as positive, an inverter is used for the reset signal. 
+
+
+
+#### **Example 2**
+The verilog code for the example 2 is given below :
+```
+module dff_const2(input clk, input reset, output reg q);
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+		q <= 1'b1;
+	else
+		q <= 1'b1;
+end
+endmodule
+```
+The above code infers a D flip-flop with asynchronous set (reset signal is applied to set input) as shown below :
+
+
+
+The optimised design infers a direct connection of VDD (logic 1) to the output q as shown below:
+
+
+
+The simulation, synthesis result and the netlist are shown below :
+
+
+#### **Example 3**
+The verilog code for the example 3 is given below :
+```
+module dff_const3(input clk, input reset, output reg q);
+reg q1;
+
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+	begin
+		q <= 1'b1;
+		q1 <= 1'b0;
+	end
+	else
+	begin
+		q1 <= 1'b1;
+		q <= q1;
+	end
+end
+
+endmodule
+```
+The above code infers a two D flip-flop with asynchronous set and reset (reset signal is applied to set and reset input) as shown below :
+
+
+
+Since this code doesn't need optimisation it will infer two D flip-flop with asynchronous set and reset as shown above.
+
+The simulation, synthesis result and the netlist are shown below :
+
+
+
+At the timestamp 1550 the signal q1 changes from 0 to 1 but the output q transits from 1 to 0 for a clock cycle. It is because there will be a finite clock to q delay so the second flip-flop will sample the logic 0 at that rising edge of the clock. Hence there is a change in the output signal for one clock cycle. 
+
+
+
+
+#### **Example 4**
+The verilog code for the example 4 is given below :
+```
+module dff_const4(input clk, input reset, output reg q);
+reg q1;
+
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+	begin
+		q <= 1'b1;
+		q1 <= 1'b1;
+	end
+	else
+	begin
+		q1 <= 1'b1;
+		q <= q1;
+	end
+end
+
+endmodule
+```
+The above code infers a two D flip-flop with asynchronous set(reset signal is applied to set input ) as shown below :
+
+
+
+The optimised design infers a direct connection of VDD (logic 1) to the output q as shown below:
+
+The simulation, synthesis result and the netlist are shown below :
+
+
+
+#### **Example 5**
+The verilog code for the example 5 is given below :
+```
+module dff_const5(input clk, input reset, output reg q);
+reg q1;
+
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+	begin
+		q <= 1'b0;
+		q1 <= 1'b0;
+	end
+	else
+	begin
+		q1 <= 1'b1;
+		q <= q1;
+	end
+end
+
+endmodule
+```
+
+
+The above code infers a two D flip-flop with asynchronous reset  as shown below :
+
+
+
+Since this code doesn't need optimisation it will infer two D flip-flop with asynchronous reset as shown above.
+
+
+The simulation, synthesis result and the netlist are shown below :
+
+
+
+### **Optimisation of Unused States**
+
+**Steps to simulate and generate the netlist for the below designs**
+
+Simulation steps :
+```
+iverilog <rtl_name.v> <tb_name.v>
+./a.out
+gtkwave <dump_file_name.vcd>
+```
+
+Generating netlist steps :
+```
+# Remove "#" if needed
+yosys
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+read_verilog <module_name.v> 
+synth -top <top_module_name>
+opt_clean -purge
+dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+show
+write_verilog -noattr <netlist_name.v>
+```
+
+
+Consider the verilog code shown below :
+```
+module counter_opt (input clk , input reset , output q);
+reg [2:0] count;
+assign q = count[0];
+
+always @(posedge clk ,posedge reset)
+begin
+	if(reset)
+		count <= 3'b000;
+	else
+		count <= count + 1;
+end
+
+endmodule
+```
+
+This verilog code will infer a 3-bit counter with asynchronous reset.
+The possible states of the counter are as follows :
+| count[2] count[1] count[0]  |COUNT[2] COUNT[1] COUNT[0] |
+|:---:|:---:|
+| 0 0 0 | 0 0 1  |
+| 0 0 1 | 0 1 0 |
+| 0 1 0 | 0 1 1 |
+| 0 1 1 | 1 0 0 |
+| 1 0 0 | 1 0 1 |
+| 1 0 1 | 1 1 0 |
+| 1 1 0 | 1 1 1 |
+| 1 1 1 | 0 0 0 |
+
+where </br>
+count - Previous count</br>
+COUNT - Preset count
+
+Since the output q is always assigned COUNT[0]. The other bits of the count are not used and not required. Instead of infering three flip-flops , on optimising the design it will infer a single D flip-flop and an inverter as shown below :
+
+!
+
+The simulation, synthesis result and the netlist are shown below :
+
+
+
+Consider another verilog code shown below :
+```
+module counter_opt (input clk , input reset , output q);
+reg [2:0] count;
+assign q = count==3'b100;
+
+always @(posedge clk ,posedge reset)
+begin
+	if(reset)
+		count <= 3'b000;
+	else
+		count <= count + 1;
+end
+
+endmodule
+```
+In this case since q is asserted only when count == 3'b100, all the three flip-flops are used. Hence even after optimisation , the code will infer three flops.
+
+The simulation, synthesis result and the netlist are shown below :
+
+
+
 
 </details>
 
