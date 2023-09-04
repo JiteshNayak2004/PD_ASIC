@@ -235,6 +235,117 @@ the output of the synthesis displays the number of wires used, number of standar
 ![Screenshot from 2023-08-29 14-28-29](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/7c9f560a-4280-4e7e-8ab1-1689ba198d2f)
 
 </details>
+## Timing libs, Hierarchical vs Flat Synthesis and Efficient flop coding styles
+
+<details>
+<summary>Timing libs</summary>
+	
+To view the contents inside the .lib file type the following command :
+```
+cd ASIC/sky130RTLDesignAndSynthesisWorkshop/lib/
+gvim sky130_fd_sc_hd__tt_025C_1v80.lib
+```
+One of the fundamental parameter stored within .lib files comprises PVT parameters, where P signifies Process, V represents Voltage, and T denotes Temperature. 
+The variations in these parameters can cause significant changes in the performance of circuits.
+
+1. Process Variation: During the manufacturing process, there may be some deviations in the transistor characteristics, causing non-uniformity across the semiconductor wafer. Critical parameters like oxide thickness, dopant concentration, and transistor dimensions experience alterations.
+
+2. Voltage Variation: Voltage regulators might exhibit variability in their output voltage over time, inducing fluctuations in current and impacting the operational speed of circuits. 
+
+3. Temperature Variation: The functionality of a semiconductor device is sensitive to changes in temperature, particularly at the internal junctions of the chip. 
+
+Further it contains the technology that is used is CMOS for which delay are modelled  through table lookup. This file also defines the units for parameters like voltage, power, current, capacitance, and resistance. Within the .lib library, each standard cell consists a  set of parameters specific to that cell's features.
+
+Consider the a2111oi gate whose parameters and verilog files is shown below:
+
+1. here a21110i means and first 2 ips and or it with other inputs
+2. Within the .lib file, sevetral parameters specific to this particular standard cell is given, including leakage power values for every possible input combination,specifications regarding pin type and pin capacitances,internal power metrics, timing-related particulars, as well as area measurements and power-related specifics for the standard cells. Similarly for all the standard cells the parameters above mentioned is listed in the .lib file.
+
+Consider the different versions of the same logic gate shown below:
+
+
+In all the three the logic inferred is same bu the area is different. Wider cells consume more power but delay wise it is less. The leakage power in the wider cell is more compared to the narrow cell which is depicted in the image .
+
+### **Hiererchical Synthesis and Flat Synthesis**
+Hierarchical synthesis is breaking a comples modules into smaller, more manageable sub-modules or blocks. Each of these sub-modules can be synthesized or designed independently before being integrated into the larger system. This approach allows for efficient design, optimization, and verification of individual components while maintaining a structured and organized design process. An illustration of the hierarchical synthesis is shown below :
+
+Consider the verilog file multiple module which is given in the verilog_files directory
+
+ ```
+module sub_module2 (input a, input b, output y);
+	assign y = a | b;
+endmodule
+
+module sub_module1 (input a, input b, output y);
+	assign y = a&b;
+endmodule
+
+
+module multiple_modules (input a, input b, input c , output y);
+	wire net1;
+	sub_module1 u1(.a(a),.b(b),.y(net1));  //net1 = a&b
+	sub_module2 u2(.a(net1),.b(c),.y(y));  //y = net1|c ,ie y = a&b + c;
+endmodule
+ ```
+
+ In this case the module multiple_modules iinstantiates two sub_modules where the sub_module1 implements the AND gate and sub_module2 implemets the OR gate which are integrated in the multiple_modules.  Synthesis the multiple module using the sollowing commands:
+ ```
+ # Remove "#" if needed
+ cd /home/kanish/ASIC/sky130RTLDesignAndSynthesisWorkshop/verilog_files
+ yosys
+ read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+ read_verilog 
+ read_verilog multiple_modules.v 
+ synth -top multiple_modules
+ abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+ show multiple_modules
+ write_verilog multiple_modules_hier.v
+ ``` 
+ ___
+ **Note:**</br>
+ When using hierarchical design instead of enetering the ***show*** command to view the file ***show <module_name>*** must be otherwise yosys will generate the following error : "ERROR: For formats different than 'ps' or 'dot' only one module must be selected."
+ ___
+
+ ![hier_show](./images/week_2_day_2/hierarchi_des.png)
+ ![netlist_hier](./images/week_2_day_2/netlist_hier.png)
+ 
+ Yosys does not show the AND gate and OR gate in the synthesis instead it shows the submodule names. The netlist also contains the AND and OR logic in separate submodules. Some times yosys may optimize the design such that the OR gate will be created using NAND gates. It is because the CMOS structure of the OR gate which is shown below has two pmos transistors stacked together. The mobility of the holes is less than the mobility of the electrons , since mosfets are majority carrier devices and majority carrier of the pmos is holes it increases the delay hence it becomes a bad circuit. In NAND gate implementation only the nmos are stacked.
+ ![cmos_or](./images/week_2_day_2/CMOS_OR.jpg)
+
+Flattening the hierarchy means simplifying the hierarchical structure of a design by collapsing or merging lower-level modules or blocks into a single, unified representation. In yosys the flattening can be done with ***flat*** command. Yosys illustration of flattening the hiererchy.
+
+```
+ cd /home/kanish/ASIC/sky130RTLDesignAndSynthesisWorkshop/verilog_files
+ yosys
+ read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+ read_verilog 
+ read_verilog multiple_modules.v 
+ synth -top multiple_modules
+ abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+ flatten
+ show
+ write_verilog multiple_modules_flat.v
+```
+![flat_des](./images/week_2_day_2/flat_des.png)
+![netlist_flat](./images/week_2_day_2/netlist_flat.png)
+
+The flatten command breaks the hierarchy and makes the design into a single module by creating AND and OR gates for the logics inferred by the submodule which is shown in the images above.
+
+### **Synthesising a Submodule :**
+Suppose a multiplier design needs to be used in numerous instances. Rather than undergoing synthesis six times independently, the preferred approach is to synthesize it once and then duplicate it within the primary module. Using module-level synthesis becomes advantageous when dealing with multiple occurrences of identical modules. Another reason for synthesizing submodule is to follow the principle of divide and conque for extensive designs that may not be optimized effectively, synthesizing the design module by module ensures that each module is effectively optimized.
+
+**Steps to synthesis submodule :**
+
+```
+cd /home/kanish/ASIC/sky130RTLDesignAndSynthesisWorkshop/verilog_files
+yosys
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+read_verilog multiple_modules.v 
+synth -top sub_module
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+show
+```
+![submodule_demo](./images/week_2_day_2/submodule_synth.png)
 
 
 
