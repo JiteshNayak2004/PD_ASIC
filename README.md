@@ -391,6 +391,9 @@ show
 3. A D flop-flop needs two inputs : data and clock. The flip-flop can be positive-edge triggered or negative-edge triggered i.e, the output makes transition during the rising edge of the clock pulse if it is positive-edge triggered and if the output makes transition during the falling edge of the clock pulse then it is said to be negative- edge triggered.
 
 ### **Need of flip-flops**</br>
+![glitch](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/c0af23c2-daf0-4948-b1fe-ecf5eb63b9bd)
+![glitch_plot](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/ebb7db29-4ddf-4967-949f-8c30c5b0fb69)
+
 In any electronic circuit there will always be an propagation delay. These delays may cause glitches in the output which may cause the output state to change when it is not supposed to. Glitches are unwanted transitions in the output. As an illustration consider the circuit shown below:
 
 1. The propagation delay of the OR gate is 1ns and AND gate is 2ns. Initially a,b,c are 0,0,1 and the internal node i0 is 0 and the output Y is high.
@@ -444,8 +447,8 @@ begin
 end
 endmodule
 ```
-
-
+![wav1](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/0d92cd8d-e9a9-442a-a86c-33c3f6c43909)
+![net1](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/93e8727f-9437-4fa0-9054-38567049a081)
 
 **2. D flip-flop with Asynchronous reset**</br>
 A D flip-flop with asynchronous reset combines the functionality of a D flip-flop with the ability to reset its state asynchronously. This means that the flip-flop's stored value can be reset to 0 or low state regardless of the clock signal's state.
@@ -461,7 +464,8 @@ begin
 end
 endmodule
 ```
-
+![wav2](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/983435db-ab32-40fe-b10d-2d8eb5efdaa1)
+![net2](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/335e152c-5636-412a-b127-b6a05b52feb7)
 
 
 **3. D flip-flop with Asynchronous set**</br>
@@ -479,6 +483,8 @@ begin
 end
 endmodule
 ```
+![wav3](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/4892639c-beb1-48e1-a2ec-7ce9556c2141)
+![net3](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/b193fd6b-3dba-44ce-8b11-f01782fda026)
 
 
 **4. D flip-flop with Asynchronous and Synchronous reset**</br>
@@ -499,6 +505,8 @@ begin
 end
 endmodule
 ```
+![wav4](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/fbde31fc-2861-4d6e-80ac-1d92cee58806)
+![net4](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/cd20d35b-7c13-48f1-a352-4459485148a1)
 
 
 ### **Optimizations**
@@ -1068,9 +1076,8 @@ In this case since q is asserted only when count == 3'b100, all the three flip-f
 The simulation, synthesis result and the netlist are shown below :
 
 
-
-
 </details>
+
 
 
 
