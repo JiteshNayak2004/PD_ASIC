@@ -363,6 +363,163 @@ show
 
 
 
+<details>
+<summary> flip flops </summary>
+
+1. A flip-flop is a fundamental sequential synchronous electronic circuit that is capable of storing information a single flip-flop can store 1- bit of information and several flip-flops can be grouped together to form registers and memory that can store multiple bits of information.
+2. There are several types of flip-flops like JK flip-flop, D flip-flop, T flip-flop and SR flip-flop but D flip-flop is widely and most commanly used since it transmits the input data to the output without performing any modifications.
+3. A D flop-flop needs two inputs : data and clock. The flip-flop can be positive-edge triggered or negative-edge triggered i.e, the output makes transition during the rising edge of the clock pulse if it is positive-edge triggered and if the output makes transition during the falling edge of the clock pulse then it is said to be negative- edge triggered.
+
+### **Need of flip-flops**</br>
+In any electronic circuit there will always be an propagation delay. These delays may cause glitches in the output which may cause the output state to change when it is not supposed to. Glitches are unwanted transitions in the output. As an illustration consider the circuit shown below:
+
+1. The propagation delay of the OR gate is 1ns and AND gate is 2ns. Initially a,b,c are 0,0,1 and the internal node i0 is 0 and the output Y is high.
+2. At t=0ns there is change in the inputs a,b,c becomes 1,1,0. because of the propagation delays of the AND gate and OR gate at t=1ns the output node transits from high to low and since the input to the OR gate both i0 and c are 0.
+3. At t=2ns the internal node i0 transists from 0 to 1 and  the inputs to the OR gate becomes 1 and 0. Since the propagation delay of the OR gate is 1ns the output Y becomes high at 3ns and remains stable. Between 1ns and 3ns the output made an unwanted change in the transition resulting in a glitch.  
+
+In order to avoid the glitches a D flip-flop can be connected at the output so that the output will change only at the rising or falling edge of the clock. As mentioned earlier flip-flops generally needs two inputs: data and clock. But the problem is the initial state of the flip-flop is unknown. So in order to set the initial value of the flip-flop, two more inputs are provided : preset/set and reset. These additional inputs can be synchronous with clock or asynchronous with clock.
+
+**Steps to simulate and generate the netlist for the below designs**
+
+Simulation steps :
+```
+iverilog <rtl_name.v> <tb_name.v>
+./a.out
+gtkwave <dump_file_name.vcd>
+```
+
+Generating netlist steps :
+```
+# Remove "#" if needed
+yosys
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+read_verilog <module_name.v> 
+synth -top <top_module_name>
+dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+show
+write_verilog -noattr <netlist_name.v>
+```
+
+___
+***Note***:</br>
+**dfflibmap** - technology mapping of flip-flops</br>
+dfflibmap  -liberty - Maps internal flip-flop cells to the flip-flop cells in the technology library specified in the given liberty file.
+
+Generally in the flow there will be a separate .lib file for the flip-flops which needs to be used with the dfflibmap command.
+___
+
+### **Illustration of Different types of Flip-flop** 
+**1. D flip-flop with Synchronous reset**</br>
+A D flip-flop with synchronous reset  combines the functionality of a D flip-flop with the ability to reset its state synchronously. This means that the flip-flop's stored value can be reset to 0 or low state based on a clock signal and a reset input, ensuring that the reset operation occurs when the clock signal transits.
+The verilog code, simulation and synthesis results are shown below:
+```
+module dff_syncres ( input clk , input async_reset , input sync_reset , input d , output reg q );
+always @ (posedge clk )
+begin
+	if (sync_reset)
+		q <= 1'b0;
+	else	
+		q <= d;
+end
+endmodule
+```
+
+
+
+**2. D flip-flop with Asynchronous reset**</br>
+A D flip-flop with asynchronous reset combines the functionality of a D flip-flop with the ability to reset its state asynchronously. This means that the flip-flop's stored value can be reset to 0 or low state regardless of the clock signal's state.
+The verilog code, simulation and synthesis results are shown below:
+```
+module dff_asyncres ( input clk ,  input async_reset , input d , output reg q );
+always @ (posedge clk , posedge async_reset)
+begin
+	if(async_reset)
+		q <= 1'b0;
+	else	
+		q <= d;
+end
+endmodule
+```
+
+
+
+**3. D flip-flop with Asynchronous set**</br>
+A D flip-flop with asynchronous set combines the functionality of a D flip-flop with the ability to set its state asynchronously. This means that the flip-flop's stored value can be set to 1 or high state regardless of the clock signal's state.
+The verilog code, simulation and synthesis results are shown below:
+
+```
+module dff_async_set ( input clk ,  input async_set , input d , output reg q );
+always @ (posedge clk , posedge async_set)
+begin
+	if(async_set)
+		q <= 1'b1;
+	else	
+		q <= d;
+end
+endmodule
+```
+
+
+**4. D flip-flop with Asynchronous and Synchronous reset**</br>
+A D flip-flop with both asynchronous and synchronous reset that combines the features of a D flip-flop with the ability to reset its state using either an asynchronous reset input or a synchronous reset input. This provides flexibility in resetting the flip-flop's state under different conditions.
+
+The verilog code, simulation and synthesis results are shown below:
+
+```
+module dff_asyncres_syncres ( input clk , input async_reset , input sync_reset , input d , output reg q );
+always @ (posedge clk , posedge async_reset)
+begin
+	if(async_reset)
+		q <= 1'b0;
+	else if (sync_reset)
+		q <= 1'b0;
+	else	
+		q <= d;
+end
+endmodule
+```
+
+
+### **Optimizations**
+During synthesis yosys will perform optimisations based on the logic that is being designed. An illustration of the yosys optimization is given below:
+
+**1. Optimisation Example 1**
+
+Consider the verilog design given below:
+```
+module mul2 (input [2:0] a, output [3:0] y);
+	assign y = a * 2;
+endmodule
+```
+This code performs multiplication of the input number by 2. Since the input is 3-bit binary number all the input and output combinations are as follows:
+| a2 a1 a0  |y3 y2 y1 y0   |
+|:---:|:---:|
+| 0 0 0 | 0 0 0 0  |
+| 0 0 1 | 0 0 1 0  |
+| 0 1 0 | 0 1 0 0  |
+| 0 1 1 | 0 1 1 0  |
+| 1 0 0 | 1 0 0 0  |
+| 1 0 1 | 1 0 1 0  |
+| 1 1 0 | 1 1 0 0  |
+| 1 1 1 | 1 1 1 0  |
+
+y0 is always 0 and the code doesn't need any hardware and it only needs the proper wiring of the input bits to the output and grounding the bit y0. The netlist of the design is shown below:
+
+
+**2. Optimisation Example 2**
+
+Consider the verilog design given below:
+```
+module mult8 (input [2:0] a , output [5:0] y);
+	assign y = a * 9;
+endmodule
+```
+In this design the 3-bit input number "a" is multiplied by 9 i.e.,(a*9) which can be re-written as (a\*8) + a . The term (a\*8) is nothing but a left shifting the number a by three bits. Consider that a = a2 a1 a0. (a\*8) results in a2 a1 a0 0 0 0. (a\*9)=(a\*8)+a = a2 a1 a0 a2 a1 a0 = aa(in 6 bit format). Hence in this case no hardware realization is required. The synthesized netlist of this design is shown below:
+
+
+</details>
+
 
 
 
