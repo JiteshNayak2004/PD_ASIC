@@ -235,7 +235,6 @@ the output of the synthesis displays the number of wires used, number of standar
 ![Screenshot from 2023-08-29 14-28-29](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/7c9f560a-4280-4e7e-8ab1-1689ba198d2f)
 
 </details>
-## Timing libs, Hierarchical vs Flat Synthesis and Efficient flop coding styles
 
 <details>
 <summary>Timing libs</summary>
@@ -245,7 +244,13 @@ To view the contents inside the .lib file type the following command :
 cd ASIC/sky130RTLDesignAndSynthesisWorkshop/lib/
 gvim sky130_fd_sc_hd__tt_025C_1v80.lib
 ```
+The name of the library file ("sky130_fd_sc_hd__tt_025C_1v80") means the following :
+
+tt : indicates variations due to process and here it indicates Typical Process.
+025C : indicates the variations due to temperatures where the silicon will be used.
+1v80 : indicates the variations due to the voltage levels where the silicon will be incorporated.
 One of the fundamental parameter stored within .lib files comprises PVT parameters, where P signifies Process, V represents Voltage, and T denotes Temperature. 
+
 The variations in these parameters can cause significant changes in the performance of circuits.
 
 1. Process Variation: During the manufacturing process, there may be some deviations in the transistor characteristics, causing non-uniformity across the semiconductor wafer. Critical parameters like oxide thickness, dopant concentration, and transistor dimensions experience alterations.
@@ -259,12 +264,19 @@ Further it contains the technology that is used is CMOS for which delay are mode
 Consider the a2111oi gate whose parameters and verilog files is shown below:
 
 1. here a21110i means and first 2 ips and or it with other inputs
-2. Within the .lib file, sevetral parameters specific to this particular standard cell is given, including leakage power values for every possible input combination,specifications regarding pin type and pin capacitances,internal power metrics, timing-related particulars, as well as area measurements and power-related specifics for the standard cells. Similarly for all the standard cells the parameters above mentioned is listed in the .lib file.
+2. we can check the verilog model of the file to understand functionality
+3. Within the .lib file, sevetral parameters specific to this particular standard cell is given,
+   - including leakage power values for every possible input combination,
+   - specifications regarding pin type and pin capacitances,
+   - internal power metrics,
+   -  timing-related particulars,
+   -  as well as area measurements and power-related specifics for the standard cells
+4. Similarly for all the standard cells the parameters above mentioned is listed in the .lib file.
 
 Consider the different versions of the same logic gate shown below:
 
 
-In all the three the logic inferred is same bu the area is different. Wider cells consume more power but delay wise it is less. The leakage power in the wider cell is more compared to the narrow cell which is depicted in the image .
+In all the three the logic inferred is same but the area is different. Wider cells consume more power but delay wise it is less. The leakage power in the wider cell is more compared to the narrow cell which is depicted in the image .
 
 ### **Hiererchical Synthesis and Flat Synthesis**
 Hierarchical synthesis is breaking a comples modules into smaller, more manageable sub-modules or blocks. Each of these sub-modules can be synthesized or designed independently before being integrated into the larger system. This approach allows for efficient design, optimization, and verification of individual components while maintaining a structured and organized design process. An illustration of the hierarchical synthesis is shown below :
