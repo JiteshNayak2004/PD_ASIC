@@ -331,16 +331,23 @@ endmodule
  **Note:**</br>
  When using hierarchical design instead of enetering the ***show*** command to view the file ***show <module_name>*** must be otherwise yosys will generate the following error : "ERROR: For formats different than 'ps' or 'dot' only one module must be selected."
  ___
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/4774add9-bc2c-4a23-8297-51daeec08046)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/8ab4b5d6-6422-4684-90b2-48567e2418d1)
+![hierarchi_des](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/93b37b25-3098-4adb-a19f-2340212eb13a)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/ffafed20-1fc6-4ddf-bc62-18edad8b9907)
+
  
 1. Yosys does not show the AND gate and OR gate in the synthesis instead it shows the submodule names the netlist also contains the AND and OR logic in separate submodules.
 2. Some times yosys may optimize the design such that the OR gate will be created using NAND gates it is because the CMOS structure of the OR gate which is shown below has two pmos transistors stacked together the mobility of the holes is less than the mobility of the electrons
 3. since mosfets are majority carrier devices and majority carrier of the pmos is holes it increases the delay hence it becomes a bad circuit. In NAND gate implementation only the nmos are stacked.
 
+![CMOS_OR](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/b7f5ed53-23e7-4252-8914-1f709a934858)
+
 
 Flattening the hierarchy means simplifying the hierarchical structure of a design by collapsing or merging lower-level modules or blocks into a single, unified representation. In yosys the flattening can be done with ***flat*** command. Yosys illustration of flattening the hiererchy.
 
 ```
- cd /home/kanish/ASIC/sky130RTLDesignAndSynthesisWorkshop/verilog_files
+ cd /home/jitesh/ASIC/sky130RTLDesignAndSynthesisWorkshop/verilog_files
  yosys
  read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
  read_verilog 
@@ -353,6 +360,9 @@ Flattening the hierarchy means simplifying the hierarchical structure of a desig
 ```
 
 The flatten command breaks the hierarchy and makes the design into a single module by creating AND and OR gates for the logics inferred by the submodule which is shown in the images above.
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/db40caaf-453d-4436-9041-767c3e255ce0)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/bc81cab8-3b53-4920-9304-e8fef3e8a076)
+
 
 ### **Synthesising a Submodule :**
 Suppose a multiplier design needs to be used in numerous instances. Rather than undergoing synthesis six times independently, the preferred approach is to synthesize it once and then duplicate it within the primary module. Using module-level synthesis becomes advantageous when dealing with multiple occurrences of identical modules. Another reason for synthesizing submodule is to follow the principle of divide and conque for extensive designs that may not be optimized effectively, synthesizing the design module by module ensures that each module is effectively optimized.
@@ -360,7 +370,7 @@ Suppose a multiplier design needs to be used in numerous instances. Rather than 
 **Steps to synthesis submodule :**
 
 ```
-cd /home/kanish/ASIC/sky130RTLDesignAndSynthesisWorkshop/verilog_files
+cd /home/jitesh/ASIC/sky130RTLDesignAndSynthesisWorkshop/verilog_files
 yosys
 read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
 read_verilog multiple_modules.v 
@@ -370,6 +380,7 @@ show
 ```
 </details>
 
+![submodule_synth](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/52d31fc4-ac67-4ea5-a15c-5e5c7c84be27)
 
 
 <details>
