@@ -2,7 +2,7 @@
 this is a repo that contains the notes and lab assignments for physical design for ASIC course
 ## RISCV
 <details>
-<summary>Day 1 setting up the risc-v toolchain </summary>
+<summary>setting up the risc-v toolchain </summary>
 1. the risc-v compiler version
 ![Screenshot from 2023-08-20 10-44-56]			(https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/fc1fce85-47da-4347-b615-43a5367c0af2)
 
@@ -104,8 +104,9 @@ loop:   add a4,a3,a4   //incremental addition
 
 </details>
 
-## sky130 
+## SKY130
 
+### intro to rtl design and synthesis
 <details>
 <summary>iverilog</summary>
 1.the rtl design is the implementation of a spec and we check the
@@ -189,7 +190,7 @@ and write_verilog to write out the netlist
 4. now for checking whether the netlist generated is accurate we give the netlist and the testbench to iverilog
 and we get a vcd file and use gtkwave to see the wave
 
-### class 2
+
 1. what is rtl design it is the  behavioural representation  of the required specs using a hdl
 
 but what we need is a hardware not code ?
@@ -517,8 +518,270 @@ endmodule
 ```
 In this design the 3-bit input number "a" is multiplied by 9 i.e.,(a*9) which can be re-written as (a\*8) + a . The term (a\*8) is nothing but a left shifting the number a by three bits. Consider that a = a2 a1 a0. (a\*8) results in a2 a1 a0 0 0 0. (a\*9)=(a\*8)+a = a2 a1 a0 a2 a1 a0 = aa(in 6 bit format). Hence in this case no hardware realization is required. The synthesized netlist of this design is shown below:
 
+</details>
+
+### combinational and sequential optimizations
+<details>
+<summary>combinational optimizations</summary>
+
+### **Logic Optimisations**
+In a broader context, Digital electronics encompasses two types of optimisations: Combinational and Sequential optimisations. These optimisations are done inorder to achieve designs that are efficient in terms of area, power, and performance.
+
+### **Combinational Optimisations**
+The techniques used for optimising the combinational Circuits are as follows:
+1. Constant Propagation (Direct Optimisation)
+2. Boolean Logic Optimisation (using K-Map or Quine McCluskey method)
+
+#### **1. Constant Propagation Illustration**
+Consider the combinational circuit shown below :
+
+The boolean logic inferred is Y = ((AB)+C)'. If A is always tied to ground i.e., A = 0, then the expression will always evaluate to C'. In this case instead of having a AND gate and a NOR gate the circuit can be simplified by using a single NOT gate with C as its input. Even though both of then represent the same logic since the number of transistors used in the optimised design is less compared to that of the given circuit which shown in the above figure. The transistor level implementation of the given circuit and the optimised circuit is shown below :
+
+
+The circuit that is given is implemented in NAND logic in order to prevent the stacking of the pmos. The transistor implementation clearly demonstrates a reduction in the required number of transistors for designing, decreasing from 12 to 2 in the optimised design. This will result in reduced power consumption and occuppies less area.
+
+#### **2. Boolean Logic Optimisation Illustration**
+Consider the verilog statement below : 
+```
+assign y = a?(b?c:(c?a:0)):(!c);
+```
+The ternary operator **(?:)** will realize a mux upon synthesis. The combinational circuit that corresponds to the above statement is shown below:
+
+
+This circuit can be optimised by writing the equivalent expression (or function) in boolean variables and minimising the function that will result in more optimised design which is shown below:
+
+
+### **Illustration of Combinational Optimizsation:**
+
+**Steps to generate the netlist for the below designs**
+
+Generating netlist steps :
+```
+# Remove "#" if needed
+yosys
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+read_verilog <module_name.v> 
+synth -top <top_module_name>
+# flatten # Use if multiple modules are present
+opt_clean -purge
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+show
+write_verilog -noattr <netlist_name.v>
+```
+
+___
+**opt_clean** - remove unused cells and wires. The ***-purge*** switch removes internal nets if they have a public name. This command identifies wires and cells that are unused and removes them.  This command can be used to clean up after the commands that do the actual work.
+___
+
+#### **Example 1**
+The verilog code for the example 1 is given below :
+```
+module opt_check (input a , input b , output y);
+	assign y = a?b:0;
+endmodule
+```
+The above code infers a multiplexer as shown below :
+
+Since one of the inputs of the multiplexer is always connected to the ground it will infer an AND gate on optimisation.
+
+
+
+The synthesis result and the netlist are shown below :
+
+
+
+#### **Example 2**
+The verilog code for the example 2 is given below :
+```
+module opt_check2 (input a , input b , output y);
+	assign y = a?1:b;
+endmodule
+```
+The above code infers a multiplexer as shown below :
+
+
+
+Since one of the inputs of the multiplexer is always connected to the logic 1 it will infer an OR gate on optimisation. The OR gate will be NAND implementation since NOR gate has stacked pmos while NAND implementation has stacked nmos.
+
+
+
+The synthesis result and the netlist are shown below :
+
+
+
+
+#### **Example 3**
+The verilog code for the example 3 is given below :
+```
+module opt_check3 (input a , input b, input c , output y);
+	assign y = a?(c?b:0):0;
+endmodule
+```
+The above code infers two multiplexers as shown below : 
+
+
+
+On optimisation the above design becomes a 3 input AND gate as shown below :
+
+
+
+The synthesis result and the netlist are shown below :
+
+
+
+#### **Example 4**
+The verilog code for the example 4 is given below :
+```
+module opt_check3 (input a , input b, input c , output y);
+	assign y = a?(c?b:0):0;
+endmodule
+```
+The above code infers two multiplexers as shown below : 
+
+
+
+On optimisation the above design becomes a 2 input XNOR gate as shown below :
+
+
+
+The synthesis result and the netlist are shown below :
+
+
+#### **Example 5**
+The verilog code for the example 5 is given below :
+```
+module sub_module1(input a , input b , output y);
+ assign y = a & b;
+endmodule
+
+
+module sub_module2(input a , input b , output y);
+ assign y = a^b;
+endmodule
+
+
+module multiple_module_opt(input a , input b , input c , input d , output y);
+wire n1,n2,n3;
+
+sub_module1 U1 (.a(a) , .b(1'b1) , .y(n1));
+sub_module2 U2 (.a(n1), .b(1'b0) , .y(n2));
+sub_module2 U3 (.a(b), .b(d) , .y(n3));
+
+assign y = c | (b & n1); 
+
+
+endmodule
+```
+
+The circuit inferred by the code is shown below : 
+
+
+
+On optimisation the above design becomes a AND OR gate as shown below :
+
+
+
+The synthesis result and the netlist are shown below :
+
+
+
+
+#### **Example 6**
+The verilog code for the example 6 is given below :
+```
+module sub_module(input a , input b , output y);
+ assign y = a & b;
+endmodule
+
+
+
+module multiple_module_opt2(input a , input b , input c , input d , output y);
+wire n1,n2,n3;
+
+sub_module U1 (.a(a) , .b(1'b0) , .y(n1));
+sub_module U2 (.a(b), .b(c) , .y(n2));
+sub_module U3 (.a(n2), .b(d) , .y(n3));
+sub_module U4 (.a(n3), .b(n1) , .y(y));
+
+
+endmodule
+```
+
+The circuit inferred by the code is shown below : 
+
+
+
+On optimisation the above design becomes a direct connection of ground (logic 0) to output as shown below :
+
+
+
+The synthesis result and the netlist are shown below :
+
+
+
+
+
+
 
 </details>
+
+<details>
+<summary>sequential optimizations</summary>
+
+ ### **Sequential Optimisations**
+The sequential logic optimisations techniques are broadly classified into two categories :
+1. Basic Techniques
+	a. Sequential Constant Propagation
+2. Advanced Techniques
+	a. State Optimisation
+	b. Retiming
+	c. Sequential Logic Cloning (Floor aware Synthesis)
+
+#### **1. Sequential Constant Propagation**
+Consider the sequential circuit shown below :
+
+
+
+The D flip-flop shown in the figure is positive edge triggered with asynchronous reset and the data input D is always tied to the ground (i.e, low state or logic 0). When reset is applied the output of the flop becomes low and if reset it deasserted the output of the flop still remains low. Hence one of the input to the NAND gate is always low resulting in the output Y to be always in high stae (logic 1 or VDD). Hence the optimised version of this circuit is connecting the output port Y directly to VDD i.e., the supply voltage.
+
+___
+***Note***: </br>
+Consider the circuit shown below :
+
+
+This circuit is similar to the one that is discussed above except that it doesn't have asynchronous reset instead it has asynchronous set. When the set input is logic 1 then output of the flop i.e., Q becomes high otherwise Q follows D input which is logic 0. This circuit can't be optimised like the previous circuit discussed in the above section. Consider the waveform between timestamp 1 and timestamp 2, the set pin is deasserted before the rising edge of the clock. The output Q remains high until the next rising edge even though the set input is deasseretd. The output of thr flop Q makes transition only at timestamp2. Therefore set input must be considered as Q'. This circuit can't be optimised.
+___
+
+#### **2. State Optimisation**
+State optimization refers to the process of minimizing the number of unused states in a digital circuit's state machine.
+
+#### **3. Sequential Logic Cloning**
+Sequential logic cloning is used to replicate or clone a portion of a sequential logic circuit while maintaining its functionality and behavior. The goal is to exploit the benefits of parallelism and redundancy while ensuring that the cloned circuit produces identical outputs to the original circuit for the same inputs.
+This technique is commonly employed in various scenarios such as redundancy for fault tolerance, speed improvement, and power optimization. This technique is generally used when a physical aware synthesis is done.
+
+Consider the circuit shown below : 
+
+
+
+Consider flop A has large positive slack. The flops B and C are far from flop A. Hence there will be a large routing delay from A to B and A to C. To avoid this flop A and the combinational logic 2 is replicated  or cloned in the paths of B and C as shown in the figure below. Since flop A has large positive slack the delay introduced because of the cloning will be compensated and the further delay in the circuit is mainly depended on flop B and flop C.
+
+
+
+#### **4. Retiming**
+Retiming  used to improve the performance interms of better timing characteristics by repositioning the registers (flip-flops) within the circuit without altering its functionality. In a digital circuit, registers (flip-flops) are used to store intermediate results and control the flow of data. The placement of these registers can significantly impact the circuit's overall performance, including its critical path delay, clock frequency, and power consumption. Retiming aims to optimize these factors by moving registers to appropriate locations within the circuit.
+
+Consider the circuit shown below :
+
+
+Consider the C-Q delay and set up time is 0ns. The combinational circuits have finite amount of the propagation delay. The maximum clock frequency with which the circuit operates depends on the propagation delay of the combinational logic. From flop A to B the propagation delay is 5ns and the maximum frequency with which this portion of circuit can be operated is 200MHz. Fom flop B to C the propagation delay is 2ns and the maximum frequency with which this portion of circuit can be operated is 500MHz. The effective frequency is minimum of the both which is 200MHz.
+
+Suppose some part of the logic from combinational circuit between flop B and C is placed with the combinational circuit between the flop A and flop B in such a way that the propagation delay of the circuit between flop A and flop is reduced while propagation delay between flop B and flop C is increased by a small amount as show below :
+
+
+The maximum frequency with which the portion of circuit between A and B can be operated is 250MHz and the maximum frequency with which the portion of circuit between B and C can be operated is 333MHz. The effective frequency is minimum of the both which is 250MHz. Thus the effective maximum frequency has increased after performing the retiming.
+
+</details>
+
 
 
 
