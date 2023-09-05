@@ -571,9 +571,13 @@ The techniques used for optimising the combinational Circuits are as follows:
 
 #### **1. Constant Propagation Illustration**
 Consider the combinational circuit shown below :
+![propag](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/40c5e2dd-5836-46c2-af2e-39123d88376c)
+
 
 The boolean logic inferred is Y = ((AB)+C)'. If A is always tied to ground i.e., A = 0, then the expression will always evaluate to C'. In this case instead of having a AND gate and a NOR gate the circuit can be simplified by using a single NOT gate with C as its input. Even though both of then represent the same logic since the number of transistors used in the optimised design is less compared to that of the given circuit which shown in the above figure. The transistor level implementation of the given circuit and the optimised circuit is shown below :
 
+![ckt1](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/a0379a57-2122-4310-8e06-2f37ebd508b9)
+![ckt2](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/e5f2a095-c3e5-4e55-aa7c-f95372dffa3d)
 
 The circuit that is given is implemented in NAND logic in order to prevent the stacking of the pmos. The transistor implementation clearly demonstrates a reduction in the required number of transistors for designing, decreasing from 12 to 2 in the optimised design. This will result in reduced power consumption and occuppies less area.
 
@@ -583,10 +587,10 @@ Consider the verilog statement below :
 assign y = a?(b?c:(c?a:0)):(!c);
 ```
 The ternary operator **(?:)** will realize a mux upon synthesis. The combinational circuit that corresponds to the above statement is shown below:
-
+![1](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/5c4804cc-ebc8-4032-911e-c2b1ae330d1f)
 
 This circuit can be optimised by writing the equivalent expression (or function) in boolean variables and minimising the function that will result in more optimised design which is shown below:
-
+![bl_opt](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/70501933-51cd-4fd7-80b4-640cb68e7362)
 
 ### **Illustration of Combinational Optimizsation:**
 
@@ -618,12 +622,15 @@ module opt_check (input a , input b , output y);
 endmodule
 ```
 The above code infers a multiplexer as shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/5de45f59-ba66-4b36-80f9-808b5099422a)
+
 
 Since one of the inputs of the multiplexer is always connected to the ground it will infer an AND gate on optimisation.
-
-
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/30f1995e-cfc2-4be0-a8eb-95079c0f4a36)
 
 The synthesis result and the netlist are shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/363b1da1-6702-492d-8038-a0edd45920b0)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/112cd21c-5d60-4a98-be77-1ca7cb698b59)
 
 
 
@@ -635,15 +642,17 @@ module opt_check2 (input a , input b , output y);
 endmodule
 ```
 The above code infers a multiplexer as shown below :
-
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/4948b838-7b5b-4f82-aed6-d97dc8fe1d4e)
 
 
 Since one of the inputs of the multiplexer is always connected to the logic 1 it will infer an OR gate on optimisation. The OR gate will be NAND implementation since NOR gate has stacked pmos while NAND implementation has stacked nmos.
 
-
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/6fa873cd-d884-44af-b21a-a70eb488cb93)
 
 The synthesis result and the netlist are shown below :
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/1f8d3b77-6ffe-45f5-b2d9-1fa15f997f0d)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/0025a3e6-3058-486b-9ee7-43655d65c8d8)
 
 
 
@@ -656,14 +665,18 @@ endmodule
 ```
 The above code infers two multiplexers as shown below : 
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/0cc86bfc-a118-427e-ada4-a526e82d4cbd)
 
 
 On optimisation the above design becomes a 3 input AND gate as shown below :
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/adcc49de-3659-49cb-9e1b-9ffe679965bf)
 
 
 The synthesis result and the netlist are shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/bacea75d-622c-408c-9cf1-8d26db2e778f)
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/8b85458b-8624-409a-89b0-6b9aa553a50a)
 
 
 #### **Example 4**
@@ -675,13 +688,17 @@ endmodule
 ```
 The above code infers two multiplexers as shown below : 
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/c19e9f8e-a234-4a7a-b563-25230bffcf73)
 
 
 On optimisation the above design becomes a 2 input XNOR gate as shown below :
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/8ae4ace0-6bd7-4fb7-8b43-6bf27787d62e)
 
 
 The synthesis result and the netlist are shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/e2b1289a-f3ae-407c-ab59-31b7100594c4)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/bfe24864-076a-44ed-b101-6e0862b26826)
 
 
 #### **Example 5**
@@ -712,15 +729,19 @@ endmodule
 
 The circuit inferred by the code is shown below : 
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/0a54ce2e-3680-495c-acd8-3f4264d24341)
 
 
 On optimisation the above design becomes a AND OR gate as shown below :
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/8ade3b15-49f1-4445-ae10-7d6578a75eac)
 
 
 The synthesis result and the netlist are shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/136a733a-063b-427c-9830-d52745763d6c)
 
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/8785a593-01a1-496d-8c8d-6fac408b3c4b)
 
 
 #### **Example 6**
@@ -746,16 +767,20 @@ endmodule
 
 The circuit inferred by the code is shown below : 
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/fbf80926-d64b-40e0-9dfb-3e5cd354a9b7)
 
 
 On optimisation the above design becomes a direct connection of ground (logic 0) to output as shown below :
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/9ce8f38c-3d52-4a0d-9c25-5c5fd4cdb9a8)
 
 
 The synthesis result and the netlist are shown below :
 
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/17731ff3-cb1e-48c5-94ef-8594c8db704f)
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/fc3fe3ca-2197-400e-94f1-b3d2ffae947d)
 
 
 
@@ -777,13 +802,16 @@ The sequential logic optimisations techniques are broadly classified into two ca
 #### **1. Sequential Constant Propagation**
 Consider the sequential circuit shown below :
 
-
+[image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/e27a0e31-da2d-4b29-ba60-b8c699bb0906)
 
 The D flip-flop shown in the figure is positive edge triggered with asynchronous reset and the data input D is always tied to the ground (i.e, low state or logic 0). When reset is applied the output of the flop becomes low and if reset it deasserted the output of the flop still remains low. Hence one of the input to the NAND gate is always low resulting in the output Y to be always in high stae (logic 1 or VDD). Hence the optimised version of this circuit is connecting the output port Y directly to VDD i.e., the supply voltage.
 
 ___
 ***Note***: </br>
 Consider the circuit shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/df66ca8b-0c5e-4a46-a90a-3ce5d015e81e)
+
+
 
 
 This circuit is similar to the one that is discussed above except that it doesn't have asynchronous reset instead it has asynchronous set. When the set input is logic 1 then output of the flop i.e., Q becomes high otherwise Q follows D input which is logic 0. This circuit can't be optimised like the previous circuit discussed in the above section. Consider the waveform between timestamp 1 and timestamp 2, the set pin is deasserted before the rising edge of the clock. The output Q remains high until the next rising edge even though the set input is deasseretd. The output of thr flop Q makes transition only at timestamp2. Therefore set input must be considered as Q'. This circuit can't be optimised.
@@ -797,25 +825,30 @@ Sequential logic cloning is used to replicate or clone a portion of a sequential
 This technique is commonly employed in various scenarios such as redundancy for fault tolerance, speed improvement, and power optimization. This technique is generally used when a physical aware synthesis is done.
 
 Consider the circuit shown below : 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/7f0a0a13-9b0c-491e-8b62-53948674b03d)
 
 
 
 Consider flop A has large positive slack. The flops B and C are far from flop A. Hence there will be a large routing delay from A to B and A to C. To avoid this flop A and the combinational logic 2 is replicated  or cloned in the paths of B and C as shown in the figure below. Since flop A has large positive slack the delay introduced because of the cloning will be compensated and the further delay in the circuit is mainly depended on flop B and flop C.
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/8db3e6cb-0ee1-414a-a66b-1deb6d53adf8)
 
 
 #### **4. Retiming**
 Retiming  used to improve the performance interms of better timing characteristics by repositioning the registers (flip-flops) within the circuit without altering its functionality. In a digital circuit, registers (flip-flops) are used to store intermediate results and control the flow of data. The placement of these registers can significantly impact the circuit's overall performance, including its critical path delay, clock frequency, and power consumption. Retiming aims to optimize these factors by moving registers to appropriate locations within the circuit.
 
 Consider the circuit shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/61633200-cd69-430a-973e-b5129674573b)
 
 
 Consider the C-Q delay and set up time is 0ns. The combinational circuits have finite amount of the propagation delay. The maximum clock frequency with which the circuit operates depends on the propagation delay of the combinational logic. From flop A to B the propagation delay is 5ns and the maximum frequency with which this portion of circuit can be operated is 200MHz. Fom flop B to C the propagation delay is 2ns and the maximum frequency with which this portion of circuit can be operated is 500MHz. The effective frequency is minimum of the both which is 200MHz.
 
 Suppose some part of the logic from combinational circuit between flop B and C is placed with the combinational circuit between the flop A and flop B in such a way that the propagation delay of the circuit between flop A and flop is reduced while propagation delay between flop B and flop C is increased by a small amount as show below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/fe93e51e-ac8e-4a80-b568-4ea63fa4b111)
 
 
 The maximum frequency with which the portion of circuit between A and B can be operated is 250MHz and the maximum frequency with which the portion of circuit between B and C can be operated is 333MHz. The effective frequency is minimum of the both which is 250MHz. Thus the effective maximum frequency has increased after performing the retiming.
+
 ### **Illustration of Sequential Optimizsation:**
 
 **Steps to simulate and generate the netlist for the below designs**
@@ -857,12 +890,16 @@ end
 endmodule
 ```
 The above code infers the circuit as shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/1d83f130-32f1-40f4-b5fd-5cfb32d56bdf)
 
 
 Since this code doesn't need optimisation it will infer a D flip-flop with asynchronous reset as shown above.
 
 The simulation, synthesis result and the netlist are shown below :
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/6c8d3b94-1234-4091-afe5-d1d84f247d31)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/9a76991c-b3bd-4518-8241-82a5db652b48)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/1cc57676-806f-4c90-b0e2-7a49469acf7c)
 
 
 All the standard cells by default have negative logic for reset and since in the code reset is mentioned as positive, an inverter is used for the reset signal. 
@@ -884,13 +921,19 @@ endmodule
 ```
 The above code infers a D flip-flop with asynchronous set (reset signal is applied to set input) as shown below :
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/2c7fe0c0-40e1-42f0-b785-0aeb07d7dce7)
 
 
 The optimised design infers a direct connection of VDD (logic 1) to the output q as shown below:
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/4856a19f-8f85-42a1-9ca4-cdf6cecd6fdf)
 
 
 The simulation, synthesis result and the netlist are shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/6ac2e91d-0e46-41b8-b7ab-f66f1c87c5c3)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/dd70c622-8877-44ae-8f25-28109c746db7)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/cc66a777-9eb5-4096-aca5-e9ad3a927db3)
+
 
 
 #### **Example 3**
@@ -917,12 +960,17 @@ endmodule
 ```
 The above code infers a two D flip-flop with asynchronous set and reset (reset signal is applied to set and reset input) as shown below :
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/74539b84-c571-410f-b796-63d193bd0aae)
 
 
 Since this code doesn't need optimisation it will infer two D flip-flop with asynchronous set and reset as shown above.
 
 The simulation, synthesis result and the netlist are shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/88aa9f25-1880-4321-a79a-859a16153ae2)
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/54df708e-4748-4968-b1fb-60adb6ad95bb)
+
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/eb10ce56-c9db-446c-b1c8-7ffab31e82a6)
 
 
 At the timestamp 1550 the signal q1 changes from 0 to 1 but the output q transits from 1 to 0 for a clock cycle. It is because there will be a finite clock to q delay so the second flip-flop will sample the logic 0 at that rising edge of the clock. Hence there is a change in the output signal for one clock cycle. 
@@ -954,12 +1002,18 @@ endmodule
 ```
 The above code infers a two D flip-flop with asynchronous set(reset signal is applied to set input ) as shown below :
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/9f7d572c-a497-450c-a94a-b3b3c4a6605b)
 
 
 The optimised design infers a direct connection of VDD (logic 1) to the output q as shown below:
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/78e7c903-2d16-4bb9-8d60-9c84f3ac49c8)
 
 The simulation, synthesis result and the netlist are shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/914eb58d-5541-450f-b1ba-0abbb939d38e)
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/c21e4ad2-4131-4ba3-ad14-a058fa84eaa6)
+
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/aef01b5f-90d7-41e0-a8b4-9d88ce5f0c9c)
 
 
 #### **Example 5**
@@ -988,13 +1042,16 @@ endmodule
 
 The above code infers a two D flip-flop with asynchronous reset  as shown below :
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/c0dabdb4-5d5a-4b78-9d60-04333501a796)
 
 
 Since this code doesn't need optimisation it will infer two D flip-flop with asynchronous reset as shown above.
 
 
 The simulation, synthesis result and the netlist are shown below :
-
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/03909b0b-2890-435e-8ade-d9353140b98d)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/1349295b-e885-4083-a4ee-b8826674eb0e)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/11c3c13e-316b-4fba-93a0-0ee6f52e4e34)
 
 
 ### **Optimisation of Unused States**
@@ -1058,11 +1115,13 @@ count - Previous count</br>
 COUNT - Preset count
 
 Since the output q is always assigned COUNT[0]. The other bits of the count are not used and not required. Instead of infering three flip-flops , on optimising the design it will infer a single D flip-flop and an inverter as shown below :
-
-!
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/383c3192-2500-4a89-9713-2af9a841ccbd)
 
 The simulation, synthesis result and the netlist are shown below :
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/4e9729d7-92c8-42c5-815b-22d623d62d4b)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/fcbfdf1b-abd7-475c-9edc-f965137f430d)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/c61caa75-6cad-4e51-829b-d2d1db400d15)
 
 
 Consider another verilog code shown below :
@@ -1084,6 +1143,8 @@ endmodule
 In this case since q is asserted only when count == 3'b100, all the three flip-flops are used. Hence even after optimisation , the code will infer three flops.
 
 The simulation, synthesis result and the netlist are shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/95e4db9a-9489-49e2-bddd-d9d0e157c2a4)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/c991f5d0-9a5f-4627-b4da-234953017346)
 
 
 </details>
