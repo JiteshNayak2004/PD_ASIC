@@ -1,4 +1,4 @@
-# PD_ASIC
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/adde3f83-b524-4dac-9d31-b99d37eaccb3)# PD_ASIC
 this is a repo that contains the notes and lab assignments for physical design for ASIC course
 ## RISCV
 <details>
@@ -1145,6 +1145,250 @@ In this case since q is asserted only when count == 3'b100, all the three flip-f
 The simulation, synthesis result and the netlist are shown below :
 ![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/95e4db9a-9489-49e2-bddd-d9d0e157c2a4)
 ![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/c991f5d0-9a5f-4627-b4da-234953017346)
+
+
+</details>
+
+
+<details>
+
+<summary>gate level simulation</summary>
+
+
+## Day - 4 : Gate Level Simulation (GLS), Blocking Vs Non-blocking assignment and Synthesis-Simulation Mismatch
+
+### **Gate Level Simulation**
+Gate Level Simulation helps ensure that the synthesized version of the design matches the specification both in terms of functionality and  timing. It helps identify mistakes and differences in the synthesised netlist and ensures that the final design functions as intended. Generally GLS is done to ensure that there is no synthesis-simulation mismatch. To perform the GLS the testbench that is used to verify the RTL is used. The GLS flow is similar to the testbench flow except that gate level verilog models are also used. It is necessary to mention the gatelevel verilog models  to iverilog to make the iverilog understand about the standard cell given in the library .GLS requires adding information about timing delays. Gate level Verilog models can be functional and timing aware. If the gate level models are delay annotated then it can used for timing validation. 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/e05c6043-9c54-43ed-954b-decb7f65d7d9)
+
+
+### **Synthesis-Simulation Mismatch**
+Synthesis-simulation mismatch refers to the differences between the behavior of a digital circuit as simulated at the Register Transfer Level (RTL) and its behavior after being synthesized to gate-level netlists. Synthesis-simulation mismatch can occur because of the following reasons:
+1. Missing Sensitivity List
+2. Blocking vs Non-blocking assignments
+3. Non standard verilog coding
+
+#### **1. Missing Sensitivity List**
+Consider the verilog code and its corresponding graph shown below :
+```
+module mux(
+	input i0,i1,s,
+	output reg y
+)
+	always @(sel) begin
+		if(sel)
+			y = i1;
+		else
+			y = i0;
+	end
+endmodule
+```
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/550ece82-a607-4a1f-95b8-ce9602cb8559)
+
+
+The "always" block is sensitive only to the "sel" signal. Whenever there's a modification in the "sel" output, it triggers a change in the output value. However, as this piece of code implies a multiplexer, the output should also change if the input changes. Since the sensitivity list includes only "sel," the output remains unaffected and it doesn't follow the input i0 when the sel is logic 0. Hence this a circuit behaves like a latch.
+
+In order to solve the problem all the critical signals needed to be mentioned in the sensitivity list. So the corrected code is given below :
+```
+module mux(
+	input i0,i1,s,
+	output reg y
+)
+	always @(*) begin //* - It considers changes in all the input signals. So always is evaluated whenever any signal changes.
+		if(sel)
+			y = i1;
+		else
+			y = i0;
+	end
+endmodule
+```
+#### **2. Blocking and Non-Blocking Statements in Verilog**
+Blocking and Non-Blocking statemnets are very important statements. They must used with utmost care so that intended logic is created. These statements are used inside the always block.
+**1. Blocking Assignment:**
+Blocking assignments are denoted using the "=" operator. When a blocking assignment is executed, it directly assigns the right-hand side value to the left-hand side variable immediately within the current simulation cycle. The subsequent statements in the procedural block  will wait for this assignment to complete before proceeding. Blocking assignments are sequentially executed.
+
+**2. Non-blocking Assignment:**
+Non-blocking assignments are denoted using the "<=" operator. When a non-blocking assignment is encountered, the right-hand side value is scheduled to be assigned to the left-hand side variable at the end of the current simulation cycle. This means that all non-blocking assignments within a procedural block are executed simultaneously, updating variables concurrently. The value changes take effect in the next simulation cycle. Non-Blocking assignments are executed in parallel.
+
+#### **Caveats with Blocking Assignment**
+**Example 1**
+Consider the verilog code given below:
+```
+module code(
+	input clk,reset,d,
+	output reg q
+)
+	reg q0;
+	always @(posedge clk, posedge reset) begin
+		if(reset) begin
+			q=1'b0;
+			q0=1'b0;
+		end
+		else begin
+			q = q0; //Line 1
+			q0=d; // Line 2
+		end
+	end
+endmodule
+```
+The inetent of this code is to create a 2-bit shift register. Since blocking assignmnet is used for Line 1 and Line 2 both the lines will be executed sequentially. First line 1 will be executed creating a flip-flop whose input is q0 and output is q. Then line 2 will be executed which creates a second flip-flop whose input is d and output is q0 thereby connecting two flip-flops and creating a 2-bit shift register shown below:
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/080f5f4c-90ca-4d32-af3d-e615464f4a09)
+
+
+Consider the verilog code shown below :
+```
+module code(
+	input clk,reset,d,
+	output reg q
+)
+	reg q0;
+	always @(posedge clk, posedge reset) begin
+		if(reset) begin
+			q=1'b0;
+			q0=1'b0;
+		end
+		else begin
+			q0 = d; //Line 1
+			q=q0; // Line 2
+		end
+	end
+endmodule
+```
+This code looks similar to the previous one except that line 1 and line 2 are interchanged. Since , blocking assignment is used line 1 and line 2 will be executed sequentially. First line 1 will be executed which creates a D flip-flop with the input d and output q0, then line 2 is executed. Since q0 is already defined assigning q0 to q creates wire . Hence only flip-flop is inferred instead of two. The circuit corresponding to the code is shown below :
+
+
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/ab617f50-66cd-4b25-a90b-417190e528cb)
+
+
+**Example 2**
+Consider the verilog code shown below :
+```
+module(
+	input a,b,c,
+	output reg y
+)
+	reg q0;
+	always @(*) begin
+		y = q0 & c; //Line 1
+		q0 = a|b; //Line 2
+	end
+endmodule
+```
+In line 1 the output y is assigned with q0&c. But q0 is not mentioned anywhere before. Hence the previous value of the q0 will be taken and this will not infer a combinational circuit as expected instead a latch based circuit will be inferred. The corrected version of the code is shown below:
+```
+module(
+	input a,b,c,
+	output reg y
+)
+	reg q0;
+	always @(*) begin
+		q0 = a|b; //Line 1
+		y = q0 & c; //Line 2
+		
+	end
+endmodule
+``` 
+
+### **Illustration of GLS and Synthesis Simulation Mismatch**
+
+**Steps to simulate, generate the netlist and to perform the GLS for the below designs**
+
+Simulation steps :
+```
+iverilog <rtl_name.v> <tb_name.v>
+./a.out
+gtkwave <dump_file_name.vcd>
+```
+
+Generating netlist steps :
+```
+# Remove "#" if needed
+
+yosys
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+read_verilog <module_name.v> 
+synth -top <top_module_name>
+# opt_clean -purge # If optimisation has to be done
+# dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib # if sequential circuit is used 
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+show
+write_verilog -noattr <netlist_name.v>
+```
+
+Steps to perform GLS:
+```
+iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v <netlist_name.v> <tb_name.v>
+./a.out
+gtkwave <dump_file_name.vcd>
+```
+
+#### **Example 1**
+Consider the verilog code shown below :
+```
+module ternary_operator_mux (input i0 , input i1 , input sel , output y);
+	assign y = sel?i1:i0;
+endmodule
+```
+In verilog ternary operator will realize  multiplexer upin synthesis. If the operand left of the ? is true then output follows the immediate operand right of  ? otherwise the ouput follows the immediate operand to the right of :.
+
+The simulation, synthesis result , the netlist and the GLS are shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/cc154fd0-0f15-430e-b255-4c0ef3945a00)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/c1ba98ee-5fd2-434d-a165-e69e136b8687)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/92848a97-2730-49b4-996e-26531826de70)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/94b5c142-69bb-4aef-9b6f-88a79fc8eead)
+
+
+
+In this case there is no synthesis and simulation mismatch.
+
+#### **Example 2**
+Consider the verilog code shown below :
+```
+module bad_mux (input i0 , input i1 , input sel , output reg y);
+always @ (sel)
+begin
+	if(sel)
+		y <= i1;
+	else 
+		y <= i0;
+end
+endmodule
+```
+This code only has sel signal in sensitivity list. Hence the RTL simulation output will not match the expected specification.
+
+The simulation, synthesis result , the netlist and the GLS are shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/a7302786-10fc-4fd0-a7cb-a975cbec01f7)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/e051425a-ae15-4ecf-88b5-66c7fa4e2d57)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/b22d9d0c-1933-46d5-897f-8ef82c31ef88)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/c1cf136d-9749-4556-9159-193db1707052)
+
+
+
+In this case there is a synthesis and simulation mismatch. While performing synthesis yosys has corrected the sensitivity list error.
+
+
+#### **Example 3**
+Consider the verilog code shown below :
+```
+module blocking_caveat (input a , input b , input  c, output reg d); 
+reg x;
+always @ (*)
+begin
+	d = x & c; //Line 1
+	x = a | b; //Line 2
+end
+endmodule
+```
+This code only has signal x in line which is not defined before. Hence the previous value of x will be taken and the expression will be evaluated. Hence the RTL simulation output will not match the expected specification and will infer a latch based circuit instead of the combinational circuit.
+
+The simulation, synthesis result , the netlist and the GLS are shown below :
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/732d0d02-4c37-4a4f-b0c1-68a07ac51896)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/5854ca4f-7257-4cd9-a925-b1c98cb6aa51)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/fa7e20d7-44db-44bf-97a7-ec6cc9db821e)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/22444184-55b4-419f-9f86-8a07aa8a6908)
+
+
+In this case there is a synthesis and simulation mismatch. While performing synthesis yosys has corrected the latch error.
 
 
 </details>
