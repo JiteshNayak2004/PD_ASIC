@@ -533,6 +533,11 @@ This code performs multiplication of the input number by 2. Since the input is 3
 
 y0 is always 0 and the code doesn't need any hardware and it only needs the proper wiring of the input bits to the output and grounding the bit y0. The netlist of the design is shown below:
 
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/e8b8f7d6-9bb1-4c74-9f0f-dea09e948283)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/859f8794-1e32-4e78-893b-29dfe8a7c6e4)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/4487910c-433c-481e-87b4-6791fcc297e6)
+
+
 
 **2. Optimisation Example 2**
 
@@ -543,6 +548,12 @@ module mult8 (input [2:0] a , output [5:0] y);
 endmodule
 ```
 In this design the 3-bit input number "a" is multiplied by 9 i.e.,(a*9) which can be re-written as (a\*8) + a . The term (a\*8) is nothing but a left shifting the number a by three bits. Consider that a = a2 a1 a0. (a\*8) results in a2 a1 a0 0 0 0. (a\*9)=(a\*8)+a = a2 a1 a0 a2 a1 a0 = aa(in 6 bit format). Hence in this case no hardware realization is required. The synthesized netlist of this design is shown below:
+
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/60d884e7-5041-438b-b5b0-06f3a0b73a35)
+![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/947a4a19-0ac0-4fc9-8981-ee29e21cf294)
+![mult8](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/38b0705d-526d-4474-b9c9-88c2c8ea96f5)
+
+
 
 </details>
 
