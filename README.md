@@ -1149,10 +1149,10 @@ The simulation, synthesis result and the netlist are shown below :
 
 </details>
 
-
+## gate level simulation
 <details>
 
-<summary>gate level simulation</summary>
+<summary>gate level simulation, blocking and non blocking assignments and synthesis-simulation mismatch</summary>
 
 
 ## Day - 4 : Gate Level Simulation (GLS), Blocking Vs Non-blocking assignment and Synthesis-Simulation Mismatch
