@@ -1,4 +1,4 @@
-![image](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/adde3f83-b524-4dac-9d31-b99d37eaccb3)# PD_ASIC
+# PD_ASIC
 this is a repo that contains the notes and lab assignments for physical design for ASIC course
 ## RISCV
 <details>
