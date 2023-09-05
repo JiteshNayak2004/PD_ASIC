@@ -1149,7 +1149,7 @@ The simulation, synthesis result and the netlist are shown below :
 
 </details>
 
-## gate level simulation
+### gate level simulation
 <details>
 
 <summary>gate level simulation, blocking and non blocking assignments and synthesis-simulation mismatch</summary>
