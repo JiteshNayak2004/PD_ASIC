@@ -109,17 +109,17 @@ loop:   add a4,a3,a4   //incremental addition
 ### intro to rtl design and synthesis
 <details>
 <summary>iverilog</summary>
-1.the rtl design is the implementation of a spec and we check the
+1. the rtl design is the implementation of a spec and we check the
 functionality by simulating the design in a simulator
-2.the simulator we'd be using is iverilog
-3.the design is a set of verilog codes that has implemented the spec
+2. the simulator we'd be using is iverilog
+3. the design is a set of verilog codes that has implemented the spec
 like say full adder implemented with a lot of sub-blocks
-4.a testbench is the setup  to apply some inputs and check whether 
+4. a testbench is the setup  to apply some inputs and check whether 
 the design is working as required
-5.how does the simulator work it looks for changes in input and responds to them if there is no change in ip no change in op
-6.we provide a design file and a testbench corresponding to the design file to iverilog and it generates a vcd file
+5. how does the simulator work it looks for changes in input and responds to them if there is no change in ip no change in op
+6. we provide a design file and a testbench corresponding to the design file to iverilog and it generates a vcd file
 (value change dump)
-7.this vcd file cannot be directly viewwed and we use this other application called gtkwave to view the vcd file
+7. this vcd file cannot be directly viewwed and we use this other application called gtkwave to view the vcd file
 
 
 1.running iverilog and gtkwave
