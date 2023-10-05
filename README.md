@@ -109,6 +109,7 @@ loop:   add a4,a3,a4   //incremental addition
 ### intro to rtl design and synthesis
 <details>
 <summary>iverilog</summary>
+	
 1. the rtl design is the implementation of a spec and we check the
 functionality by simulating the design in a simulator
 2. the simulator we'd be using is iverilog
@@ -122,7 +123,7 @@ the design is working as required
 7. this vcd file cannot be directly viewwed and we use this other application called gtkwave to view the vcd file
 
 
-1.running iverilog and gtkwave
+1. running iverilog and gtkwave
 ~~~
 iverilog good_mux.v tb_good_mux.v 
 ./a.out
@@ -133,7 +134,7 @@ snapshots of the execution
 ![Screenshot from 2023-08-27 22-07-08](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/5a138dd9-bed7-4e78-9792-4cbac91ccc81)
 ![Screenshot from 2023-08-27 22-07-40](https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/7d05390b-e7f4-449f-bfcd-3efcdf202dd5)
 
-2.verilog design and testbench codes that we executed
+2. verilog design and testbench codes that we executed
 ~~~
 module good_mux (input i0 , input i1 , input sel , output reg y);
 always @ (*)
