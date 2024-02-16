@@ -4,6 +4,7 @@ this is a repo that contains the notes and lab assignments for physical design f
 <details>
 <summary>setting up the risc-v toolchain </summary>
 1. setup the risc-v compiler
+	
 2. writing and compiling a c program
 
 ~~~c
