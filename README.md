@@ -3,9 +3,7 @@ this is a repo that contains the notes and lab assignments for physical design f
 ## RISCV
 <details>
 <summary>setting up the risc-v toolchain </summary>
-1. the risc-v compiler version
-![Screenshot from 2023-08-20 10-44-56]			(https://github.com/JiteshNayak2004/PD_ASIC/assets/117510555/fc1fce85-47da-4347-b615-43a5367c0af2)
-
+1. setup the risc-v compiler
 2. writing and compiling a c program
 
 ~~~c
